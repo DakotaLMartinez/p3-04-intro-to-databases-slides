@@ -1,5 +1,675 @@
-# MDXP
+import TerminalCommand from './components/TerminalCommand';
 
-Write your slide deck here...
+# Intro to Databases
+
+
 
 ---
+
+<!-- Begin Slide -->
+
+## Key Concepts for the day:
+
+- The benefit of databases in applications
+- Relationship between a database and an API
+- Domain modeling
+- Mapping columns and rows to classes and instances
+- Basic SQL queries
+- Primary Keys
+- Foreign Keys
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Agenda
+
+- Part 1 
+  - Explanation  database benefits 
+  and a bit of a preview of where we're going with SQL moving forward
+  - Apply what we learned in homework to the Dog Walker CLI app
+- Part 2 
+  - Hop into Google sheets and start talking about database relationships in the context of different domains
+  - practice deciding where to put foreign keys
+- Optional HW: I have an exercise put together for applying the SQL concepts to the appointments domain, but I'm going to prioritize the domain modeling discussion in Google Sheets for now as it's a more valuable conversation to have for your progress as developers and is a better use of our time in lecture. If you'd like additional practice, feel free to give the exercise a try, but know that we'll doing a pivot tomorrow away from writing raw SQL queries.
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Putting things in Context
+Over the last few days we’ve been building out our CLI applications and one of the problems we’ve had is that we have to create new dogs or appointments every time we start the program.
+
+Databases allow us to store our data outside of our code and we can do CRUD and have it persist to the next session.
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## ORM Analogy
+
+![ORM Analogy](https://res.cloudinary.com/dnocv6uwb/image/upload/v1651161995/Flatiron%20Slideshow%20images/analogy.drawio.svg)
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+## Where we're headed
+
+![The Pattern](https://raw.githubusercontent.com/learn-co-students/phase3-lecture-repo-template/04_begin_intro_to_databases/04_intro_to_databases/demo/object-method-sql-query-return.drawio.svg?token=GHSAT0AAAAAABS54V3M5DXF4WXV6T3OUTPUYTJ6M6A)
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## The Flow
+
+At the end of the phase, we'll be building out an API that will sit between our React app and our database:
+
+- React App
+- Fetch to API
+- API interacts with Database
+- Sends response back to Browser
+- Resolved promise from fetch leads to change in state
+- React updates the DOM
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+<iframe
+  src="https://docs.google.com/spreadsheets/d/1XV8ixdHveb2Z5aOMQknPdsNCNmo3JZvXX4criCrNXAo/edit#gid=0"
+  class="frame"
+>
+</iframe>
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Dog Walker CLI Part 4
+
+### Key Features we're going to add to our Dog Walker CLI:
+
+- Add persistence
+  - A Read (SELECT) operation to retrieve persisted dogs
+  - A Create (INSERT INTO) operation to persists dogs
+  - An Update (UPDATE) operation to update a persisted dog.
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Changes to Integrate the database
+
+### Add sqlite3 gem to Gemfile
+
+<TerminalCommand>
+bundle add sqlite3
+</TerminalCommand>
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Changes to Integrate the database
+
+### Add a Database called dog_walker.db
+
+From the demo directory in the terminal:
+
+<TerminalCommand>
+sqlite3 db/dog_walker.db
+</TerminalCommand>
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Changes to Integrate the database
+
+### Create the Dogs Table
+
+Run the following command to create the dogs table:
+
+<TerminalCommand>
+{"sqlite3 db/dog_walker.db < db/01_create_dogs.sql"}
+</TerminalCommand>
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Changes to Integrate the database
+
+### Add database configuration to config/environment.rb
+
+Add these lines above the `require_all "lib"`
+
+```rb
+DB = SQLite3::Database.new("db/dog_walker.db")
+DB.results_as_hash = true
+```
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Tasks
+
+- Dog class
+  - **refactor your `initialize` method** 
+  - **add a `.new_from_row` method** 
+  - **refactor the `.all` method** to make a query to the database to retrieve all persisted dogs. Map over those dog rows and invoke `.new_from_row` passing each row in turn.
+  - **refactor the `#save` method** to check if there is an `id` for the object being saved before doing any SQL.
+    - if there is an id, do an UPDATE on the database
+    - if there isn't an id, do an INSERT on the database
+    - remember to return the object being saved in either case.
+- In CLI
+  - no need to change anything for now
+  - Boot it up and try to create a couple of dogs, exit the program, and see if they're still there!
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+### Logistics
+
+- The code for our cli will be written in the file `lib/dog_walker_cli.rb`. 
+- Our class methods will be written in `lib/dog.rb` where our `Dog` class is defined.
+- Again, we'll start our cli application by running the following command in our terminal:
+
+<TerminalCommand>
+./bin/run
+</TerminalCommand>
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Updating Initialize
+
+- For the Dog class we need to **refactor our `initialize` method** to use keyword arguments and include default values for id, last_walked_at, and last_fed_at (so they can be reloaded from db later)
+- We still want to be able to create new Dogs without providing those values up front, but when we save values to the database and then reload an object later on, we want to be able to assign those values based on the contents of our database.
+
+<br />
+
+```rb
+def initialize(id: nil, name:, age:, breed:, favorite_treats:,
+last_walked_at: nil, last_fed_at: nil)
+  # ...
+end
+```
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Creating a Dog in the Database
+
+Let's use the SQLite extension's Quick Query command to [Insert](https://www.sqlitetutorial.net/sqlite-insert/) a row into the dogs table.
+
+- Open the command pallette with Shift + Cmd/Ctrl + P
+- type and then select SQLite: Quick Query
+- type in `INSERT INTO dogs (name) VALUES ("Lennon Snow")`
+- hit Enter
+- open SQLite Explorer to verify that the Dog is in the Database
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Initializing from the Database
+
+Let's **add a `.new_from_row` method** that:
+- takes a row from the database as an argument (a hash with string keys corresponding to the column names and values corresponding to column values). 
+- Keyword arguments need to receive a hash with symbol keys, so you'll want to construct the key value pairs yourself within new_from_row.
+- For this, we can use the [transform_keys](https://ruby-doc.org/core-2.7.0/Hash.html#method-i-transform_keys) method 
+
+
+<br />
+
+```rb
+def self.new_from_row(row)
+  # row.transform_keys{|k| k.to_sym} will convert string keys to symbols
+end
+```
+
+- This is a case where using the `&` operator to convert the `:to_sym` symbol (representing the `to_sym` method for converting an object to a symbol) into a [Proc](https://ruby-doc.org/core-2.7.1/Proc.html) so we can pass it to `.transform_keys` or `.map` or any ruby method that expects to receive a block as an argument. The syntax is pretty simple and is seen frequently as a shorthand. Feel free to [read more about how it works](https://www.brianstorti.com/understanding-ruby-idiom-map-with-symbol/) if you're curious.
+
+```rb
+def self.new_from_row(row)
+  # row.transform_keys(&:to_sym) will also convert string keys to symbols
+end
+```
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Retrieving Dogs from the Database
+
+Let's **refactor the `.all` method** to make a query to the database to retrieve all persisted dogs. Map over those dog rows and invoke `.new_from_row` passing each row in turn.
+  
+```rb
+def self.all
+  # We still want to use the @@all class variable so we only have
+  # to query the database for all records the first time we invoke
+  # this method. 
+  # The first call to `.all` should trigger the query and use the
+  # results to create and return a collection of dogs which we'll
+  # assign to @@all
+  # The next call to the method should return the previously 
+  # assigned value of @@all
+end
+```
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Saving a Dog instance to the Database
+
+- **refactor the `#save` method** to check if there is an `id` for the object being saved before doing any SQL.
+    - if there is an id, do an UPDATE on the database to set the values of this dog to the new values in the database for the row WHERE the id matches the object being saved.
+    - if there isn't an id, do an INSERT on the database to add a row storing all of that object's attributes. After the insert is complete, query the database for the [`last_insert_rowid()`](https://www.w3resource.com/sqlite/core-functions-last_insert_rowid.php) and assign that id as the value for the `@id` of that dog.
+    - remember to return the object being saved in either case.
+
+This is quite involved, and writing this from scratch would be stretching the scope of lecture, so rather than writing it from scratch, we'll be pasting it in and discussing it.
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## The Save Method
+
+<iframe
+  src="https://hackmd.io/j8PQDWEkRM2UKhnVOUTZWg"
+  class="frame"
+>
+</iframe>
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 

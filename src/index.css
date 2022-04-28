@@ -2,7 +2,7 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
   width: 85%;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0.5em auto;
 }
 
 ul, ol {
@@ -23,6 +23,10 @@ li {
   word-break: break-word !important;
 }
 
+.prism-code ::selection {
+  background: rgba(27, 57, 253, 0.74);
+}
+
 .terminalCommand {
   background: #111;
   color: #dedede;
@@ -38,4 +42,10 @@ li {
   width: 85%;
   max-width: 1200px;
   height: auto;
+}
+
+.frame {
+  width: 90%;
+  max-width: 1200px;
+  height: 90%;
 }
