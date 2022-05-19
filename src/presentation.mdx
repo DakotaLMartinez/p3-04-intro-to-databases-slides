@@ -50,7 +50,6 @@ import TerminalCommand from './components/TerminalCommand';
 - Part 2 
   - Hop into Google sheets and start talking about database relationships in the context of different domains
   - practice deciding where to put foreign keys
-- Optional HW: I have an exercise put together for applying the SQL concepts to the appointments domain, but I'm going to prioritize the domain modeling discussion in Google Sheets for now as it's a more valuable conversation to have for your progress as developers and is a better use of our time in lecture. If you'd like additional practice, feel free to give the exercise a try, but know that we'll doing a pivot tomorrow away from writing raw SQL queries.
 
 <Note>
 
@@ -76,7 +75,7 @@ import TerminalCommand from './components/TerminalCommand';
 <!-- Begin Slide -->
 
 ## Putting things in Context
-Over the last few days we’ve been building out our CLI applications and one of the problems we’ve had is that we have to create new dogs or appointments every time we start the program.
+Over the last few days we've been building out our CLI applications and one of the problems we've had is that the dogs that we create while we run the program only last while the program is running. We need to create them again every time the program runs.
 
 Databases allow us to store our data outside of our code and we can do CRUD and have it persist to the next session.
 
@@ -321,10 +320,28 @@ sqlite3 db/dog_walker.db
 
 ### Create the Dogs Table
 
+```sql
+CREATE TABLE dogs(
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  age TEXT,
+  breed TEXT,
+  favorite_treats TEXT,
+  last_fed_at DATETIME,
+  last_walked_at DATETIME
+);
+```
+
 Run the following command to create the dogs table:
 
 <TerminalCommand>
 {"sqlite3 db/dog_walker.db < db/01_create_dogs.sql"}
+</TerminalCommand>
+
+And insert rows in the table by running the following sql file:
+
+<TerminalCommand>
+{"sqlite3 db/dog_walker.db < db/02_insert_dogs.sql"}
 </TerminalCommand>
 
 
@@ -397,7 +414,7 @@ DB.results_as_hash = true
     - remember to return the object being saved in either case.
 - In CLI
   - no need to change anything for now
-  - Boot it up and try to create a couple of dogs, exit the program, and see if they're still there!
+  - Boot it up and try to take a dog on a walk, exit the program, and see if the last walked at time is still there!
 
 <Note>
 
@@ -429,7 +446,7 @@ DB.results_as_hash = true
 - Again, we'll start our cli application by running the following command in our terminal:
 
 <TerminalCommand>
-./bin/run
+bundle exec ./bin/run
 </TerminalCommand>
 
 
