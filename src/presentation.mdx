@@ -74,10 +74,41 @@ import TerminalCommand from './components/TerminalCommand';
 
 <!-- Begin Slide -->
 
-## Putting things in Context
-Over the last few days we've been building out our CLI applications and one of the problems we've had is that the dogs that we create while we run the program only last while the program is running. We need to create them again every time the program runs.
+## Solving the Problem of Persistence
 
-Databases allow us to store our data outside of our code and we can do CRUD and have it persist to the next session.
+This is what's happening now
+
+![Dog Walker Application without persistence](https://raw.githubusercontent.com/learn-co-students/SENG-LIVE-042522-phase-3/main/assets/dog-walker-without-persistence.drawio.svg)
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+---
+
+<!-- Begin Slide -->
+
+## Solving the Problem of Persistence
+
+This is what we want
+
+![Dog Walker Application with persistence](https://raw.githubusercontent.com/learn-co-students/SENG-LIVE-042522-phase-3/main/assets/dog-walker-with-persistence.drawio.svg)
 
 
 <Note>
@@ -159,13 +190,100 @@ Databases allow us to store our data outside of our code and we can do CRUD and 
 ## The Flow
 
 At the end of the phase, we'll be building out an API that will sit between our React app and our database:
+![Web API Flow](https://github.com/learn-co-students/SENG-LIVE-042522-phase-3/raw/main/assets/flow-diagram.png)
 
-- React App
-- Fetch to API
-- API interacts with Database
-- Sends response back to Browser
-- Resolved promise from fetch leads to change in state
-- React updates the DOM
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+## The Dogs Table
+
+| id (primary key) | name (text) | age (text) | breed (text) | image_url (text)                                                                                             | last_walked_at (datetime) | last_fed_at (datetime) |
+| :--------------- | :---------- | :--------- | :----------- | :----------------------------------------------------------------------------------------------------------- | :------------------------ | :--------------------- |
+| 1                | Lennon Snow | 1 year     | Pomeranian   | https://res.cloudinary.com/dnocv6uwb/image/upload/v1609370267/dakota-and-lennon-square-compressed_hoenfo.jpg |                           |                        |
+
+What potential problem might we have if we store the dog's age as a string in the database?
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+## The Dogs Table
+
+| id (primary key) | name (text) | birthdate (datetime) | breed (text) | image_url (text)                                                                                             | last_walked_at (datetime) | last_fed_at (datetime) |
+| :--------------- | :---------- | :------------------- | :----------- | :----------------------------------------------------------------------------------------------------------- | :------------------------ | :--------------------- |
+| 1                | Lennon Snow | 2020-08-31           | Pomeranian   | https://res.cloudinary.com/dnocv6uwb/image/upload/v1609370267/dakota-and-lennon-square-compressed_hoenfo.jpg |                           |                        |
+
+By storing the dog's birthdate instead, we can calculate their age using a method we add to our ruby code.
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Naming Conventions 
+
+| Class names            | Table names             | Column names              |
+| :--------------------- | :---------------------- | :------------------------ |
+| UpperCamelCaseSingular | lower_snake_case_plural | lower_snake_case_singular |
+| Song                   | songs                   | start_time                |
+| Artist                 | artists                 | end_time                  |
+| RacecarDriver          | racecar_drivers         | location                  |
 
 <Note>
 
@@ -196,6 +314,7 @@ At the end of the phase, we'll be building out an API that will sit between our 
 >
 </iframe>
 
+[Google Sheet](https://docs.google.com/spreadsheets/d/1XV8ixdHveb2Z5aOMQknPdsNCNmo3JZvXX4criCrNXAo/edit#gid=0)
 <Note>
 
 
@@ -221,7 +340,7 @@ At the end of the phase, we'll be building out an API that will sit between our 
 
 ## Dog Walker CLI Part 4
 
-### Key Features we're going to add to our Dog Walker CLI:
+### Key New Features for the Dog Walker CLI:
 
 - Add persistence
   - A Read (SELECT) operation to retrieve persisted dogs
@@ -405,7 +524,7 @@ DB.results_as_hash = true
 ## Tasks
 
 - Dog class
-  - **refactor your `initialize` method** 
+  - **refactor the `initialize` method** 
   - **add a `.new_from_row` method** 
   - **refactor the `.all` method** to make a query to the database to retrieve all persisted dogs. Map over those dog rows and invoke `.new_from_row` passing each row in turn.
   - **refactor the `#save` method** to check if there is an `id` for the object being saved before doing any SQL.
@@ -449,6 +568,12 @@ DB.results_as_hash = true
 bundle exec ./bin/run
 </TerminalCommand>
 
+- We can also interact with our code by running the following command in our terminal:
+
+<TerminalCommand>
+bundle exec ./bin/console
+</TerminalCommand>
+
 
 <Note>
 
@@ -475,7 +600,7 @@ bundle exec ./bin/run
 
 ## Updating Initialize
 
-- For the Dog class we need to **refactor our `initialize` method** to use keyword arguments and include default values for id, last_walked_at, and last_fed_at (so they can be reloaded from db later)
+- For the Dog class we need to **refactor our `initialize` method** to include default values for id, last_walked_at, and last_fed_at (so they can be reloaded from db later)
 - We still want to be able to create new Dogs without providing those values up front, but when we save values to the database and then reload an object later on, we want to be able to assign those values based on the contents of our database.
 
 <br />
@@ -545,7 +670,7 @@ Let's use the SQLite extension's Quick Query command to [Insert](https://www.sql
 
 ## Initializing from the Database
 
-Let's **add a `.new_from_row` method** that:
+**Add a `.new_from_row` method** that:
 - takes a row from the database as an argument (a hash with string keys corresponding to the column names and values corresponding to column values). 
 - Keyword arguments need to receive a hash with symbol keys, so you'll want to construct the key value pairs yourself within new_from_row.
 - For this, we can use the [transform_keys](https://ruby-doc.org/core-2.7.0/Hash.html#method-i-transform_keys) method 
@@ -555,7 +680,7 @@ Let's **add a `.new_from_row` method** that:
 
 ```rb
 def self.new_from_row(row)
-  # row.transform_keys{|k| k.to_sym} will convert string keys to symbols
+  row.transform_keys{|k| k.to_sym} # will convert string keys to symbols
 end
 ```
 
@@ -563,7 +688,7 @@ end
 
 ```rb
 def self.new_from_row(row)
-  # row.transform_keys(&:to_sym) will also convert string keys to symbols
+  row.transform_keys(&:to_sym) # will also convert string keys to symbols
 end
 ```
 
@@ -592,18 +717,26 @@ end
 
 ## Retrieving Dogs from the Database
 
-Let's **refactor the `.all` method** to make a query to the database to retrieve all persisted dogs. Map over those dog rows and invoke `.new_from_row` passing each row in turn.
+We **refactor the `.all` method** to make a query to the database to retrieve all persisted dogs. Map over those dog rows and invoke `.new_from_row` passing each row in turn.
   
 ```rb
+@@all = nil
+
+# We want to be able to access the current state of the 
+# stored dogs
+
 def self.all
-  # We still want to use the @@all class variable so we only have
-  # to query the database for all records the first time we invoke
-  # this method. 
-  # The first call to `.all` should trigger the query and use the
-  # results to create and return a collection of dogs which we'll
-  # assign to @@all
+  # We still want to use the @@all class variable so we 
+  # only have to query the database for all records the 
+  # first time we invoke this method. 
+  # The first call to `.all` should trigger the query and 
+  # use the results to create and return a collection of 
+  # dogs which we'll assign to @@all
   # The next call to the method should return the previously 
   # assigned value of @@all
+  @@all ||= DB.execute("SELECT * FROM dogs").map do |row|
+    self.new_from_row(row)
+  end
 end
 ```
 
@@ -632,12 +765,9 @@ end
 
 ## Saving a Dog instance to the Database
 
-- **refactor the `#save` method** to check if there is an `id` for the object being saved before doing any SQL.
-    - if there is an id, do an UPDATE on the database to set the values of this dog to the new values in the database for the row WHERE the id matches the object being saved.
-    - if there isn't an id, do an INSERT on the database to add a row storing all of that object's attributes. After the insert is complete, query the database for the [`last_insert_rowid()`](https://www.w3resource.com/sqlite/core-functions-last_insert_rowid.php) and assign that id as the value for the `@id` of that dog.
-    - remember to return the object being saved in either case.
-
-This is quite involved, and writing this from scratch would be stretching the scope of lecture, so rather than writing it from scratch, we'll be pasting it in and discussing it.
+- **refactor `#save` method** to check if there is an `id` for the object being saved before doing any SQL.
+  - if there is an id, do an UPDATE on the database
+  - if there isn't do an INSERT on the database
 
 <Note>
 
@@ -662,13 +792,538 @@ This is quite involved, and writing this from scratch would be stretching the sc
 
 <!-- Begin Slide -->
 
-## The Save Method
+## Saving when there is an id
 
-<iframe
-  src="https://hackmd.io/j8PQDWEkRM2UKhnVOUTZWg"
-  class="frame"
->
-</iframe>
+- if there is an id, do an UPDATE on the database to set the *attribute* values for this dog instance as the new *column* values in the database for the row WHERE the id matches the object being saved.
+
+```rb
+# use a HEREDOC to compose a multi line query
+# https://ruby-doc.org/core-2.7.4/doc/syntax/literals_rdoc.html#label-Here+Documents+-28heredocs-29
+query = <<-SQL
+  UPDATE dogs
+  SET name = ?,
+      birthdate = ?,
+      breed = ?,
+      image_url = ?,
+      last_walked_at = ?,
+      last_fed_at = ?
+  WHERE
+      id = ? 
+SQL
+```
+<!-- 
+add ? marks to any pieces of the query that may come from user input
+these are called bind params and they're used to escape (or sanitize)
+anything in this string that has syntactical meaning in SQL like:
+(), "", ;, etc. The characters will appear in the QUERY string 
+rather than being interpreted as SQL syntax.
+https://github.com/sparklemotion/sqlite3-ruby/blob/master/faq/faq.md#how-do-i-use-placeholders-in-an-sql-statement
+-->
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Working with Times
+```rb
+# The database requires times to be formatted in a 
+# particular way, so we're using the strftime method 
+# (string format time) to convert the ruby time 
+# objects for last_walked_at and last_fed_at into a 
+# string format that sqlite3 expects
+DB.execute(
+  query,
+  self.name,
+  self.birthdate.strftime('%Y-%m-%d %H:%M:%S'),
+  self.breed,
+  self.image_url,
+  self.last_walked_at && self.last_walked_at.strftime('%Y-%m-%d %H:%M:%S'),
+  self.last_fed_at && self.last_fed_at.strftime('%Y-%m-%d %H:%M:%S'),
+  self.id
+)
+```
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Saving when there's no ID
+if there isn't an id, we do an INSERT on the database to add a row storing all of that object's attributes. After the insert is complete, query the database for the [`last_insert_rowid()`](https://www.w3resource.com/sqlite/core-functions-last_insert_rowid.php) and assign that id as the value for the `@id` of that dog.
+
+```rb
+# if the dog hasn't been saved yet, we'll trigger an INSERT
+query = <<-SQL
+  INSERT INTO dogs 
+  (name, birthdate, breed, image_url, last_walked_at, last_fed_at)
+  VALUES
+  (?, ?, ?, ?, ?, ?)
+SQL
+```
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Inserting upon save
+```rb
+DB.execute(
+  query,
+  self.name,
+  self.birthdate.strftime('%Y-%m-%d %H:%M:%S'),
+  self.breed,
+  self.image_url,
+  self.last_walked_at && self.last_walked_at.strftime('%Y-%m-%d %H:%M:%S'),
+  self.last_fed_at && self.last_fed_at.strftime('%Y-%m-%d %H:%M:%S')
+)
+# Since the dog's id will be assigned by the database
+# we'll need to tell the dog object about the last assigned id
+# we can retrieve that id from the database using the following query
+@id = DB.execute("SELECT last_insert_rowid()")[0]["last_insert_rowid()"]
+```
+
+
+
+This is quite involved, and writing this from scratch would be stretching the scope of lecture, so it's already present within the starter code and we'll be discussing it and interacting with it.
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Let's try it out!
+Let's open up our CLI and try to interact with our app
+
+```bash
+bundle exec ./bin/run
+```
+
+Try walking a Dog and then checking the Database with SQLite explorer to see the updated values
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+# ☕️ Break!!! ☕️
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Keeping Track of Related Data
+
+### Dogs
+
+| id (primary key) | name (text)   | birthday (datetime) | breed (text) | image_url (text) | last_walked_at (datetime) | last_fed_at (datetime) |
+| :--------------- | :------------ | :------------------ | :----------- | ---------------- | :------------------------ | :--------------------- |
+| 1                | "Lennon Snow" | 8/31/2020           | Pomeranian   | ...              | 8/13/2021 9:38:00 AM      |                        |
+| 2                | "Sam"         |                     |              |                  |                           |                        |
+
+### Walks
+
+| id (primary key) | time                 |
+| :--------------- | :------------------- |
+| 3                | 8/13/2021 9:38:00 AM |
+| 4                | 8/13/2021 1:30:00 PM |
+| 5                | 8/13/2021 2:30:00 PM |
+
+### Workflow for deciding where foreign keys should go
+| dogs -> walks                                                                                                | walks -> dogs                                                                                                |
+| :----------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> | <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> |
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Keeping Track of Related Data
+
+### Dogs
+
+| id (primary key) | name (text)   | birthday (datetime) | breed (text) | image_url (text) | last_walked_at (datetime) | last_fed_at (datetime) |
+| :--------------- | :------------ | :------------------ | :----------- | ---------------- | :------------------------ | :--------------------- |
+| 1                | "Lennon Snow" | 8/31/2020           | Pomeranian   | ...              | 8/13/2021 9:38:00 AM      |                        |
+| 2                | "Sam"         |                     |              |                  |                           |                        |
+
+### Walks
+
+| id (primary key) | time                 | dog_id (foreign key) |
+| :--------------- | :------------------- | -------------------- |
+| 3                | 8/13/2021 9:38:00 AM | 1                    |
+| 4                | 8/13/2021 1:30:00 PM | 1                    |
+| 5                | 8/13/2021 2:30:00 PM | 2                    |
+
+### Workflow for deciding where foreign keys should go
+| dogs -> walks | walks -> dogs  |
+| :------------ | :------------- |
+| one to many   | **one to one** |
+
+## 🔑 Key Concept 🔑
+Foreign keys always go in the table that has a **one to one** relationship with a row in the other table
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Another Example
+
+### Posts
+
+| id (primary key) | title (string) | content (text) |
+| :--------------- | :------------- | :------------- |
+| 1                | Databases      | are cool       |
+| 2                |                |                |
+| 3                |                |                |
+			
+### Comments
+
+| id (primary key) | content (text)                         |
+| :--------------- | :------------------------------------- |
+| 1                | don't I know it!                       |
+| 2                | they can remember just about anything! |
+	
+### Users
+
+| id (primary key) | email       | encrypted_password   |
+| :--------------- | :---------- | :------------------- |
+| 1                | me@me.com   | fajds0f832iovclkj    |
+| 2                | mini@me.com | adf0j1lknd0uvqkldnf- |
+
+### Workflow for deciding where foreign keys should go
+
+| Users -> Posts                                                                                               | Posts -> Users                                                                                               |     | Users -> Comments                                                                                            | Comments -> Users                                                                                            |     | Posts -> Comments                                                                                            | Comments -> Posts                                                                                            |
+| :----------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- | :-- | :----------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- | :-- | :----------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
+| <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> | <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> |     | <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> | <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> |     | <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> | <select><option>Select relationship</option><option>one to many</option><option>one to one</option></select> |
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## Another Example
+
+### Posts
+
+| id (primary key) | title (string) | content (text) | user_id (foreign key) |
+| :--------------- | :------------- | :------------- | --------------------- |
+| 1                | Databases      | are cool       | 1                     |
+| 2                |                |                |                       |
+| 3                |                |                |                       |
+			
+			
+### Comments
+
+| id (primary key) | content (text)                         | user_id (foreign key) | post_id (foreign_key) |
+| :--------------- | :------------------------------------- | --------------------- | --------------------- |
+| 1                | don't I know it!                       | 1                     | 1                     |
+| 2                | they can remember just about anything! | 2                     | 1                     |
+	
+### Users
+
+| id (primary key) | email       | encrypted_password   |
+| :--------------- | :---------- | :------------------- |
+| 1                | me@me.com   | fajds0f832iovclkj    |
+| 2                | mini@me.com | adf0j1lknd0uvqkldnf- |
+
+### Workflow for deciding where foreign keys should go
+
+| Users -> Posts | Posts -> Users |     | Users -> Comments | Comments -> Users |     | Posts -> Comments | Comments -> Posts |
+| :------------- | :------------- | :-- | :---------------- | :---------------- | :-- | :---------------- | :---------------- |
+| one to many    | **one to one** |     | one to many       | **one to one**    |     | one to many       | **one to one**    |
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## What if I want my posts to have tags as well?
+
+![Many to Many scenario](https://res.cloudinary.com/dlzuobe8h/image/upload/v1654796184/many-to-many.drawio_imvb0p.svg)
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## The Problem with Adding the foreign keys to tags
+
+![The Problem](https://res.cloudinary.com/dlzuobe8h/image/upload/v1654796290/the-problem.drawio_kswpaf.svg)
+
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## The Solution
+
+![The Solution to many to many](https://res.cloudinary.com/dlzuobe8h/image/upload/v1654796371/the-fix.drawio_woq3ya.svg)
+
+### Workflow for deciding where foreign keys should go
+
+| Posts -> Tags | Tags -> Posts |     | Posts -> PostTags | PostTags -> Posts |     | Tags -> PostTags | PostTags -> Tags |
+| :------------ | :------------ | --- | ----------------- | ----------------- | --- | ---------------- | ---------------- |
+| one to many   | one to many   |     | one to many       | **one to one**    |     | one to many      | **one to one**   |
+
+### 🔑 Join tables contain multiple foreign keys
+
+In this case:
+- PostTags will have a `post_id` and a `tag_id` creating a relationship between a single post and a single tag
+- We'll be able to see the posts associated with a tag (with id=1) by:
+  - querying for post_tags where the tag_id is 1 and collecting the post_id values for those post_tags
+  - querying for all posts whose id is in the collection of post_id values
+
+<Note>
+
+
+
+----
+----
+----
+----
+----
+----
+----
+----
+----
+----
+
+</Note>
+
+<!-- End Slide -->
+
+--- 
+
+<!-- Begin Slide -->
+
+## More Many to Many Examples
+
+[Google Sheet](https://docs.google.com/spreadsheets/d/1XV8ixdHveb2Z5aOMQknPdsNCNmo3JZvXX4criCrNXAo/edit#gid=929798637)
 
 <Note>
 

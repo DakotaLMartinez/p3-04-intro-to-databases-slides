@@ -32,6 +32,14 @@ li {
   height: 0;
 }
 
+td, th {
+  max-width: 300px;
+  word-wrap: break-word;
+  border: 1px solid #bbb;
+  padding: 10px;
+  margin: 0;
+}
+
 .terminalCommand {
   background: #111;
   color: #dedede;
